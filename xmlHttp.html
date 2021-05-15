@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>XML http request</title>
+	<style>
+	table {
+	  font-family: arial, sans-serif;
+	  border-collapse: collapse;
+	  width: 100%;
+	}
+
+	td, th {
+	  border: 1px solid #dddddd;
+	  text-align: left;
+	  padding: 8px;
+	}
+
+	tr:nth-child(even) {
+	  background-color: #dddddd;
+	}
+	</style>
+	</head>
+
+	<body>
+	<p style="color:blue;font-size:100px;text-align:center;" id="slots"> find slots </p>
+	<table id="myTable">
+	<tr>
+	 <th> Center Name </th>
+	 <th> Vaccine Name </th>
+	 <th> Available </th>
+	 <th> Age </th>
+	</tr>
+	<tr> </tr>
+	</table>
+
+
+	<audio id="myAudio" >
+       <source src="Burj-Khalifa-Ringtone.mp3" type="audio/ogg">
+   </audio>
+   
+   <p>Click the buttons to pause the audio.</p>
+	<button onclick="playAudio()" type="button">Play Audio</button>
+	<button onclick="pauseAudio()" type="button">Pause Audio</button> 
+
+    <script>
+	
+	function cleantable()
+    {
+	    var table = document.getElementById("myTable");
+		
+		for(var i = table.rows.length - 1; i >= 1; i--)
+		{
+			table.deleteRow(i);
+		}
+	}
+	
+	function insertrecord(centername, vaccinename, capacity, age) 
+	{
+		var table = document.getElementById("myTable");
+		var row = table.insertRow(1);
+		var centernamecol = row.insertCell(0);
+		var vaccinenamecol = row.insertCell(1);
+		var capacitycol = row.insertCell(2);
+		var agelimitcol = row.insertCell(3);
+		
+		centernamecol.innerHTML = centername;
+		vaccinenamecol.innerHTML = vaccinename;
+		capacitycol.innerHTML = capacity;
+		agelimitcol.innerHTML = age;
+	}
+
+	function playAudio() { 
+	  var x =  document.getElementById("myAudio");
+	  x.play();
+	} 
+
+	function pauseAudio() { 
+	  var x = document.getElementById("myAudio"); 
+	  x.pause();
+	}
+	
+	function alertcall(age,count)
+	{
+	    alert(age + "+ Vaccine available" + "Count: "+count);
+	}
+	
+	function getVaccineAvailability()
+	{
+		var d = new Date();
+		var day = d.getDate()+1
+		var mon =  d.getMonth()+1
+		var year = d.getFullYear()
+		var date = day+"-"+mon+"-"+year;
+		
+		//console.log(date);
+		//console.log("https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=462030&date="+date);
+		  let request = new XMLHttpRequest();
+		  request.open("GET", "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=462030&date="+date);
+		  request.send();
+		  request.onload = () => {
+			console.log(request);
+        if (request.status === 200) 
+		{
+          // by default the response comes in the string format, we need to parse the data into JSON
+			  var Centerlist = JSON.parse(request.response);
+			  var selected_age = 18
+			  
+			  var count = 0;
+			  for(ind in Centerlist.centers)
+			  {
+				   for(j in Centerlist.centers[ind].sessions)
+				   {
+				        count++;
+						var age_limit = Centerlist.centers[ind].sessions[j]["min_age_limit"]
+			            var centername = Centerlist.centers[ind]["name"]
+                        var vaccine = Centerlist.centers[ind].sessions[j]["vaccine"]	
+                        var capacity = Centerlist.centers[ind].sessions[j]["available_capacity"]
+						
+						/*	console.log("Count: " +count);
+							console.log("Center name:" +   Centerlist.centers[ind]["name"])
+							console.log("Vaccine name:" +  Centerlist.centers[ind].sessions[j]["vaccine"])
+							console.log("Age Limit:" +  Centerlist.centers[ind].sessions[j]["min_age_limit"])
+							console.log("Capacity:" +  Centerlist.centers[ind].sessions[j]["available_capacity"])
+						*/
+						if(age_limit == selected_age)
+						{
+						    var elmnt = document.getElementById("slots");
+						    elmnt.textContent = age_limit + "+ Slots Available";
+						    playAudio();
+							insertrecord(centername, vaccine, capacity, age_limit );
+						}	
+						else
+						{
+						   var elmnt = document.getElementById("slots");
+						   elmnt.textContent = "No Slots Available";
+						   
+						  // console.log("No Slots available");
+						}
+						
+											
+						
+				   }
+			  }
+			} 
+			else {
+			  console.log(`error ${request.status} ${request.statusText}`);
+            }
+		}
+    }
+	
+	getVaccineAvailability()
+	
+	setInterval(function(){
+	    console.clear()
+		cleantable()
+		getVaccineAvailability()
+	}, 10000)
+	
+    </script>
+
+  </body>
+</html>
