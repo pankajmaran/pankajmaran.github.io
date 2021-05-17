@@ -33,6 +33,7 @@
 	 <th> Vaccine Name </th>
 	 <th> Available </th>
 	 <th> Age </th>
+	 <th> Pincode </th>
 	</tr>
 	<tr> </tr>
 	</table>
@@ -61,7 +62,7 @@
 		}
 	}
 	
-	function insertrecord(date,centername, vaccinename, capacity, age) 
+	function insertrecord(date,centername, vaccinename, capacity, age, pincode) 
 	{
 		var table = document.getElementById("myTable");
 		var row = table.insertRow(1);
@@ -70,12 +71,14 @@
 		var vaccinenamecol = row.insertCell(2);
 		var capacitycol = row.insertCell(3);
 		var agelimitcol = row.insertCell(4);
+		var pincodecol = row.insertCell(5);
 		
 		datecol.innerHTML = date;
 		centernamecol.innerHTML = centername;
 		vaccinenamecol.innerHTML = vaccinename;
 		capacitycol.innerHTML = capacity;
 		agelimitcol.innerHTML = age;
+		pincodecol.innerHTML = pincode;
 	}
 
 	function playAudio() { 
@@ -101,12 +104,12 @@
 		var year = d.getFullYear()
 		var date = day+"-"+mon+"-"+year;
 		console.log(date);
-		console.log("https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=462030&date="+date);
-		  let request = new XMLHttpRequest();
-		  request.open("GET", "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=462030&date="+date);
-		  request.send();
-		  request.onload = () => {
-			console.log(request);
+		console.log("https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=312&date="+date);
+		let request = new XMLHttpRequest();
+		request.open("GET", "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=312&date="+date);
+		request.send();
+		request.onload = () => {
+		console.log(request);
         if (request.status === 200) 
 		{
           // by default the response comes in the string format, we need to parse the data into JSON
@@ -114,28 +117,28 @@
 			  var selected_age = 18
 			  
 			  var count = 0;
-			  for(ind in Centerlist.centers)
+			  for(ind in Centerlist.sessions)
 			  {
-				   for(j in Centerlist.centers[ind].sessions)
-				   {
-				        count++;
-						var age_limit = Centerlist.centers[ind].sessions[j]["min_age_limit"]
-			            var centername = Centerlist.centers[ind]["name"]
-                        var vaccine = Centerlist.centers[ind].sessions[j]["vaccine"]	
-                        var capacity = Centerlist.centers[ind].sessions[j]["available_capacity"]
+				   	   var age_limit = Centerlist.sessions[ind]["min_age_limit"]
+			            var centername = Centerlist.sessions[ind]["name"]
+                        var vaccine = Centerlist.sessions[ind]["vaccine"]	
+                        var capacity = Centerlist.sessions[ind]["available_capacity"]
+						var pincode = Centerlist.sessions[ind]["pincode"]
 						
 						/*	console.log("Count: " +count);
-							console.log("Center name:" +   Centerlist.centers[ind]["name"])
-							console.log("Vaccine name:" +  Centerlist.centers[ind].sessions[j]["vaccine"])
-							console.log("Age Limit:" +  Centerlist.centers[ind].sessions[j]["min_age_limit"])
-							console.log("Capacity:" +  Centerlist.centers[ind].sessions[j]["available_capacity"])
+							console.log("Center name:" +   Centerlist.sessions[ind]["name"])
+							console.log("Vaccine name:" +  Centerlist.sessions[ind]["vaccine"])
+							console.log("Age Limit:" +  Centerlist.sessions[ind]["min_age_limit"])
+							console.log("Capacity:" +  Centerlist.sessions[ind]["available_capacity"])
+							console.log("Pincode:" +  Centerlist.sessions[ind]["pincode"])
 						*/
+						
 						if(age_limit == selected_age && capacity > 0)
 						{
 						    var elmnt = document.getElementById("slots");
 						    elmnt.textContent = age_limit + "+ Slots Available";
 						    playAudio();
-							insertrecord(date, centername, vaccine, capacity, age_limit );
+							insertrecord(date, centername, vaccine, capacity, age_limit, pincode );
 						}	
 						else
 						{
@@ -147,14 +150,13 @@
 						
 											
 						
-				   }
-			  }
-			} 
-			else {
+			 }
+		} 
+		else {
 			  console.log(`error ${request.status} ${request.statusText}`);
             }
-		}
     }
+}
 	
 	function getVaccineAvailability_next()
 	{
@@ -164,9 +166,9 @@
 		var year = d.getFullYear()
 		var date = day+"-"+mon+"-"+year;
 		console.log(date);
-		console.log("https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=462030&date="+date);
+		console.log("https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=312&date="+date);
 		  let request = new XMLHttpRequest();
-		  request.open("GET", "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=462030&date="+date);
+		  request.open("GET", "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=312&date="+date);
 		  request.send();
 		  request.onload = () => {
 			console.log(request);
@@ -177,28 +179,26 @@
 			  var selected_age = 18
 			  
 			  var count = 0;
-			  for(ind in Centerlist.centers)
+			  for(ind in Centerlist.sessions)
 			  {
-				   for(j in Centerlist.centers[ind].sessions)
-				   {
-				        count++;
-						var age_limit = Centerlist.centers[ind].sessions[j]["min_age_limit"]
-			            var centername = Centerlist.centers[ind]["name"]
-                        var vaccine = Centerlist.centers[ind].sessions[j]["vaccine"]	
-                        var capacity = Centerlist.centers[ind].sessions[j]["available_capacity"]
-						
+				   	   var age_limit = Centerlist.sessions[ind]["min_age_limit"]
+			            var centername = Centerlist.sessions[ind]["name"]
+                        var vaccine = Centerlist.sessions[ind]["vaccine"]	
+                        var capacity = Centerlist.sessions[ind]["available_capacity"]
+						var pincode = Centerlist.sessions[ind]["pincode"]
 						/*	console.log("Count: " +count);
-							console.log("Center name:" +   Centerlist.centers[ind]["name"])
-							console.log("Vaccine name:" +  Centerlist.centers[ind].sessions[j]["vaccine"])
-							console.log("Age Limit:" +  Centerlist.centers[ind].sessions[j]["min_age_limit"])
-							console.log("Capacity:" +  Centerlist.centers[ind].sessions[j]["available_capacity"])
+							console.log("Center name:" +   Centerlist.sessions[ind]["name"])
+							console.log("Vaccine name:" +  Centerlist.sessions[ind]["vaccine"])
+							console.log("Age Limit:" +  Centerlist.sessions[ind]["min_age_limit"])
+							console.log("Capacity:" +  Centerlist.sessions[ind]["available_capacity"])
+							console.log("Pincode:" +  Centerlist.sessions[ind]["pincode"])
 						*/
 						if(age_limit == selected_age && capacity > 0)
 						{
 						    var elmnt = document.getElementById("slots");
 						    elmnt.textContent = age_limit + "+ Slots Available";
 						    playAudio();
-							insertrecord(date, centername, vaccine, capacity, age_limit );
+							insertrecord(date, centername, vaccine, capacity, age_limit, pincode );
 						}	
 						else
 						{
@@ -210,20 +210,18 @@
 						
 											
 						
-				   }
-			  }
-			} 
-			else {
+			 }
+		}
+		else {
 			  console.log(`error ${request.status} ${request.statusText}`);
             }
-		}
     }
-	
+}
 	getVaccineAvailability()
 	getVaccineAvailability_next()
 	setInterval(function(){
 
-	    console.clear()
+	  //  console.clear()
 		cleantable()
 		getVaccineAvailability()
 		getVaccineAvailability_next()
