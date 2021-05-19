@@ -203,7 +203,8 @@
 						{
 						    var elmnt = document.getElementById("slots");
 						    elmnt.textContent = age_limit + "+ Slots Available";
-						    playAudio();
+							if(capacity > 1)
+						        playAudio();
 							insertrecord(date, centername, vaccine, capacity, age_limit );
 						}	
 						else
