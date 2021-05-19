@@ -21,10 +21,15 @@
 	tr:nth-child(even) {
 	  background-color: #dddddd;
 	}
+	h1 {
+    text-align:center;
+    }
 	</style>
+	<h1> 18+ slots for 462030</h1>
 	</head>
 
 	<body>
+	 
 	<p style="color:blue;font-size:100px;text-align:center;" id="slots"> find slots </p>
 	<table id="myTable">
 	<tr>
@@ -134,7 +139,8 @@
 						{
 						    var elmnt = document.getElementById("slots");
 						    elmnt.textContent = age_limit + "+ Slots Available";
-						    playAudio();
+						    if(capacity > 1)
+							    playAudio();
 							insertrecord(date, centername, vaccine, capacity, age_limit );
 						}	
 						else
